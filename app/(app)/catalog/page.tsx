@@ -11,16 +11,19 @@ export default async function CatalogPage() {
   const { data: items } = await supabase
     .from("catalog_items")
     .select("*")
-    .order("name")
-    .limit(100);
+    .order("category")
+    .order("name");
+
+  const all = (items as CatalogItem[]) ?? [];
+  const categories = [...new Set(all.map((i) => i.category).filter(Boolean))].sort() as string[];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-3xl font-bold">Catalog</h1>
-        {profile?.role === "owner" && <ImportButton />}
+        <h1 className="font-heading text-2xl font-semibold">Catalog</h1>
+        {(profile?.role === "owner" || profile?.role === "admin") && <ImportButton />}
       </div>
-      <CatalogSearch initialItems={(items as CatalogItem[]) ?? []} />
+      <CatalogSearch initialItems={all} categories={categories} />
     </div>
   );
 }

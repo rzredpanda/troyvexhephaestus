@@ -8,9 +8,9 @@ const config: Config = {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
     extend: {
       fontFamily: {
-        sans:    ["DM Sans", "sans-serif"],
-        heading: ["Space Grotesk", "sans-serif"],
-        display: ["Playfair Display", "serif"],
+        sans:    ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        heading: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        mono:    ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
