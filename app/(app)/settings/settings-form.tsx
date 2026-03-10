@@ -10,7 +10,7 @@ import type { Team, Profile } from "@/lib/types";
 
 export function SettingsForm({ profile, teams }: { profile: Profile; teams: Team[] }) {
   const [fullName, setFullName] = useState(profile.full_name ?? "");
-  const [teamId, setTeamId] = useState(profile.team_id ?? "");
+  const [teamId, setTeamId] = useState(profile.team_id ?? "__none__");
   const [seedLoading, setSeedLoading] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
@@ -18,7 +18,7 @@ export function SettingsForm({ profile, teams }: { profile: Profile; teams: Team
     const res = await fetch("/api/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ full_name: fullName, team_id: teamId }),
+      body: JSON.stringify({ full_name: fullName, team_id: teamId === "__none__" ? "" : teamId }),
     });
     if (res.ok) toast.success("Settings saved");
     else toast.error("Failed to save");
@@ -57,7 +57,7 @@ export function SettingsForm({ profile, teams }: { profile: Profile; teams: Team
               <Select value={teamId} onValueChange={setTeamId}>
                 <SelectTrigger><SelectValue placeholder="No team" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No team</SelectItem>
+                  <SelectItem value="__none__">No team</SelectItem>
                   {teams.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
                 </SelectContent>
               </Select>
