@@ -1,11 +1,11 @@
-import { adminClient } from "@/lib/supabase/admin";
+import { getAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 // Bootstrap endpoint: creates a demo owner user only if no users exist.
 // Safe to leave deployed — becomes a no-op once any user exists.
 export async function POST() {
   // Check if any profiles exist
-  const { count } = await adminClient
+  const { count } = await getAdminClient()
     .from("profiles")
     .select("id", { count: "exact", head: true });
 
@@ -19,7 +19,7 @@ export async function POST() {
   const email = "demo@vex.test";
   const password = "Demo1234!";
 
-  const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+  const { data: newUser, error: createError } = await getAdminClient().auth.admin.createUser({
     email,
     password,
     email_confirm: true,
@@ -29,7 +29,7 @@ export async function POST() {
     return NextResponse.json({ error: createError.message }, { status: 500 });
   }
 
-  const { error: profileError } = await adminClient
+  const { error: profileError } = await getAdminClient()
     .from("profiles")
     .update({ full_name: "Demo Owner", role: "owner" })
     .eq("id", newUser.user!.id);

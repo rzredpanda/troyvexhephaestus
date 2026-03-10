@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { adminClient } from "@/lib/supabase/admin";
+import { getAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
   }
 
   // Commit
-  const { error } = await adminClient
+  const { error } = await getAdminClient()
     .from("catalog_items")
     .upsert(rows, { onConflict: "sku", ignoreDuplicates: false });
 

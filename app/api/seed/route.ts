@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { adminClient } from "@/lib/supabase/admin";
+import { getAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 const CATALOG_ITEMS = [
@@ -38,15 +38,15 @@ export async function POST() {
   if (profile?.role !== "owner") return NextResponse.json({ error: "Owner only" }, { status: 403 });
 
   // Upsert catalog items
-  const { error: catalogError } = await adminClient
+  const { error: catalogError } = await getAdminClient()
     .from("catalog_items")
     .upsert(CATALOG_ITEMS, { onConflict: "sku" });
   if (catalogError) return NextResponse.json({ error: catalogError.message }, { status: 500 });
 
   // Fetch inserted catalog items and active teams
   const [{ data: items }, { data: teams }] = await Promise.all([
-    adminClient.from("catalog_items").select("id, sku, unit_price"),
-    adminClient.from("teams").select("id, name").eq("archived", false).order("name"),
+    getAdminClient().from("catalog_items").select("id, sku, unit_price"),
+    getAdminClient().from("teams").select("id, name").eq("archived", false).order("name"),
   ]);
 
   if (!items || !teams || teams.length === 0) {
@@ -82,7 +82,7 @@ export async function POST() {
     "Pneumatics Kit":            [1, 0, 1, 0, 1, 0, 1],
   };
 
-  const { data: allCatalog } = await adminClient.from("catalog_items").select("id, name");
+  const { data: allCatalog } = await getAdminClient().from("catalog_items").select("id, name");
   const catalogByName = Object.fromEntries((allCatalog ?? []).map((c: { id: string; name: string }) => [c.name, c.id]));
 
   for (let t = 0; t < teams.length; t++) {
@@ -101,7 +101,7 @@ export async function POST() {
     }
   }
 
-  const { error: invError } = await adminClient
+  const { error: invError } = await getAdminClient()
     .from("inventory")
     .upsert(inventoryRows, { onConflict: "team_id,catalog_item_id" });
   if (invError) return NextResponse.json({ error: invError.message }, { status: 500 });
@@ -123,7 +123,7 @@ export async function POST() {
   }
 
   if (wantedRows.length > 0) {
-    await adminClient.from("wanted_items").upsert(wantedRows, { ignoreDuplicates: true });
+    await getAdminClient().from("wanted_items").upsert(wantedRows, { ignoreDuplicates: true });
   }
 
   // Seed checklist items
@@ -137,7 +137,7 @@ export async function POST() {
     { team_id: null, label: "Hotel reservations confirmed", checked: false, event_name: "State Championship" },
   ];
 
-  await adminClient.from("checklist_items").upsert(checklistRows, { ignoreDuplicates: true });
+  await getAdminClient().from("checklist_items").upsert(checklistRows, { ignoreDuplicates: true });
 
   // Seed BOM for first team
   if (teams[0]) {
@@ -151,7 +151,7 @@ export async function POST() {
     ].filter(Boolean);
 
     if (bomRows.length > 0) {
-      await adminClient.from("bom_items").upsert(bomRows as typeof bomRows, { ignoreDuplicates: true });
+      await getAdminClient().from("bom_items").upsert(bomRows as typeof bomRows, { ignoreDuplicates: true });
     }
   }
 

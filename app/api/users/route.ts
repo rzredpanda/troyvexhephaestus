@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { adminClient } from "@/lib/supabase/admin";
+import { getAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -22,14 +22,14 @@ export async function POST(req: Request) {
 
   const { email, password, full_name, role, team_id } = await req.json();
 
-  const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+  const { data: newUser, error: createError } = await getAdminClient().auth.admin.createUser({
     email,
     password,
     email_confirm: true,
   });
   if (createError) return NextResponse.json({ error: createError.message }, { status: 500 });
 
-  const { error: profileError } = await adminClient
+  const { error: profileError } = await getAdminClient()
     .from("profiles")
     .update({ full_name, role, team_id: team_id || null })
     .eq("id", newUser.user!.id);
