@@ -1,8 +1,9 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { Role } from "@/lib/types";
 
-export async function getProfile() {
+export const getProfile = cache(async function getProfile() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -14,7 +15,7 @@ export async function getProfile() {
     .eq("id", user.id)
     .single();
   return data;
-}
+});
 
 export async function requireRole(minRole: Role) {
   const profile = await getProfile();
