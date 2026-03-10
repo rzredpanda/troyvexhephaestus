@@ -23,6 +23,8 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id, checked } = await req.json();
   const { data, error } = await supabase.from("checklist_items").update({ checked }).eq("id", id).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -31,6 +33,8 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await req.json();
   const { error } = await supabase.from("checklist_items").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

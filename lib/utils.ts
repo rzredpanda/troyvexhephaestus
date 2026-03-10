@@ -9,7 +9,8 @@ export function formatCurrency(cents: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 }
 
-export function formatDate(iso: string) {
+export function formatDate(iso: string | null | undefined) {
+  if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

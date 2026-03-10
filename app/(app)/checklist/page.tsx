@@ -39,20 +39,22 @@ export default function ChecklistPage() {
   }
 
   async function handleCheck(id: string, checked: boolean) {
-    await fetch("/api/checklist", {
+    const res = await fetch("/api/checklist", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, checked }),
     });
+    if (!res.ok) { toast.error("Failed to update"); return; }
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, checked } : i)));
   }
 
   async function handleDelete(id: string) {
-    await fetch("/api/checklist", {
+    const res = await fetch("/api/checklist", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
+    if (!res.ok) { toast.error("Failed to delete"); return; }
     setItems((prev) => prev.filter((i) => i.id !== id));
   }
 

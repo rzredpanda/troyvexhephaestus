@@ -45,7 +45,8 @@ export default function UsersPage() {
   }
 
   async function handleRoleChange(id: string, role: string) {
-    await fetch(`/api/users/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role }) });
+    const res = await fetch(`/api/users/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role }) });
+    if (!res.ok) { toast.error("Failed to update role"); return; }
     setUsers((prev) => prev.map((u) => u.id === id ? { ...u, role } : u));
     toast.success("Role updated");
   }

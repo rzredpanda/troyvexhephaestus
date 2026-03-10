@@ -17,7 +17,7 @@ const CATALOG_ITEMS = [
   { sku: "276-6518", part_id: "4IN-OMNI", name: "4\" Omni Directional Wheel (2-pack)", unit_price: 1299, category: "Wheels" },
   { sku: "276-3533", part_id: "3.25IN-WHEEL", name: "3.25\" Traction Wheel (4-pack)", unit_price: 799, category: "Wheels" },
   { sku: "276-6519", part_id: "4IN-TRACTION", name: "4\" Traction Wheel (2-pack)", unit_price: 1099, category: "Wheels" },
-  { sku: "276-4855", part_id: "RUBBER-BAND", name: "Rubber Bands (#32, 100-pack)", unit_price: 299, category: "Hardware" },
+  { sku: "276-1496", part_id: "RUBBER-BAND", name: "Rubber Bands (#32, 100-pack)", unit_price: 299, category: "Hardware" },
   { sku: "276-5575", part_id: "SCREW-KIT", name: "Screw & Standoff Kit (200-pack)", unit_price: 999, category: "Hardware" },
   { sku: "276-5576", part_id: "NUT-KIT", name: "Keps Nut Kit (200-pack)", unit_price: 499, category: "Hardware" },
   { sku: "276-5543", part_id: "BEARING-FLAT", name: "Flat Bearing Kit (10-pack)", unit_price: 599, category: "Hardware" },

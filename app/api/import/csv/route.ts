@@ -7,11 +7,17 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  if (!["admin", "owner"].includes(profile?.role ?? "")) {
+    return NextResponse.json({ error: "Admin or owner required" }, { status: 403 });
+  }
+
   const formData = await req.formData();
   const file = formData.get("file") as File;
   const commit = formData.get("commit") === "true";
 
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
+  if (file.size > 1_000_000) return NextResponse.json({ error: "File too large (max 1MB)" }, { status: 400 });
 
   const text = await file.text();
   const rawLines = text.split(/\r?\n/).filter((l) => l.trim());

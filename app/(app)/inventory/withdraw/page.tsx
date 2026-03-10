@@ -96,7 +96,7 @@ export default function WithdrawPage() {
                 type="number"
                 min={1}
                 value={quantity}
-                onChange={(e) => setQuantity(parseInt(e.target.value))}
+                onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)}
                 required
               />
             </div>

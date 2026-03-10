@@ -108,7 +108,7 @@ export default function BOMPage() {
             </div>
             <div className="space-y-2">
               <Label>Quantity</Label>
-              <Input type="number" min={1} value={form.quantity_needed} onChange={(e) => setForm((f) => ({ ...f, quantity_needed: parseInt(e.target.value) }))} />
+              <Input type="number" min={1} value={form.quantity_needed} onChange={(e) => setForm((f) => ({ ...f, quantity_needed: parseInt(e.target.value, 10) || 1 }))} />
             </div>
             <Button type="submit" className="w-full">Add to BOM</Button>
           </form>

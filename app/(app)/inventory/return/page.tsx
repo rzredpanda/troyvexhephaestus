@@ -80,7 +80,7 @@ export default function ReturnPage() {
             </div>
             <div className="space-y-2">
               <Label>Quantity</Label>
-              <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} required />
+              <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)} required />
             </div>
             <div className="space-y-2">
               <Label>Condition</Label>
