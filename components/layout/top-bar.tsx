@@ -1,5 +1,6 @@
 "use client";
 import { ThemeToggle } from "./theme-toggle";
+import { NotificationBell } from "./notification-bell";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ export function TopBar({ profile }: { profile: Profile }) {
         <span className="text-sm text-muted-foreground">
           {profile.full_name || profile.email}
         </span>
+        <NotificationBell />
         <ThemeToggle />
         <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
           <LogOut className="h-4 w-4" />

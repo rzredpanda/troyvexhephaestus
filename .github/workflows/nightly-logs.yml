@@ -1,0 +1,40 @@
+name: Nightly Log Snapshot
+
+on:
+  schedule:
+    - cron: "0 10 * * *"  # 2:00 AM America/Los_Angeles (UTC-8 standard / UTC-7 DST)
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch sanitized logs from Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          mkdir -p logs
+          curl -sf \
+            "$SUPABASE_URL/rest/v1/inventory_logs?select=id,team_id,action,quantity,status,created_at&order=created_at.desc&limit=1000" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Accept: application/json" \
+            -o "logs/$DATE.json" || echo "[]" > "logs/$DATE.json"
+
+      - name: Commit and push logs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add logs/
+          git diff --cached --quiet || git commit -m "chore: nightly log snapshot $(date +%Y-%m-%d)"
+          git push
