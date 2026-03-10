@@ -1,0 +1,303 @@
+/*
+  ============================================================
+  DESIGN SYSTEM EXPORT
+  Stack: Tailwind CSS + shadcn/ui (Radix UI)
+  Fonts: Space Grotesk (headings), DM Sans (body), Playfair Display (display)
+  ============================================================
+
+  SETUP:
+  1. Copy this file into your project as `globals.css` (or merge into existing).
+  2. Add to tailwind.config.ts (see bottom of this file).
+  3. Install fonts via Google Fonts (link tag or @import below).
+  4. Install deps:
+       npm install tailwindcss-animate class-variance-authority clsx tailwind-merge next-themes
+*/
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   CSS VARIABLES — Light Mode
+   ============================================================ */
+@layer base {
+  :root {
+    /* Core */
+    --background:         40 25% 95%;   /* Warm off-white */
+    --foreground:        220 20% 10%;   /* Near-black */
+
+    /* Cards & Popovers */
+    --card:               40 30% 98%;
+    --card-foreground:   220 20% 10%;
+    --popover:            40 30% 98%;
+    --popover-foreground:220 20% 10%;
+
+    /* Primary — dark navy */
+    --primary:           220 20% 12%;
+    --primary-foreground: 40 25% 95%;
+
+    /* Secondary — warm light gray */
+    --secondary:          40 15% 90%;
+    --secondary-foreground:220 20% 12%;
+
+    /* Accent — muted teal/green */
+    --accent:            150 20% 40%;
+    --accent-foreground:  40 25% 97%;
+
+    /* Muted */
+    --muted:              40 12% 91%;
+    --muted-foreground:  220 10% 46%;
+
+    /* Semantic */
+    --destructive:         0 65% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --success:           150 45% 42%;
+    --success-foreground:  0 0% 100%;
+    --warning:            38 90% 55%;
+    --warning-foreground:220 20% 10%;
+    --info:              210 60% 50%;
+    --info-foreground:     0 0% 100%;
+
+    /* Form elements */
+    --border:             40 15% 87%;
+    --input:              40 15% 87%;
+    --ring:              220 20% 12%;
+
+    /* Sidebar */
+    --sidebar-background:        40 30% 97%;
+    --sidebar-foreground:       220 15% 25%;
+    --sidebar-primary:          220 20% 12%;
+    --sidebar-primary-foreground: 40 25% 95%;
+    --sidebar-accent:            40 15% 92%;
+    --sidebar-accent-foreground:220 20% 12%;
+    --sidebar-border:            40 15% 89%;
+    --sidebar-ring:             220 20% 12%;
+
+    /* Border radius base */
+    --radius: 0.625rem; /* 10px */
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(220 20% 10% / 0.04);
+    --shadow-md: 0 4px 12px -2px hsl(220 20% 10% / 0.06);
+    --shadow-lg: 0 12px 32px -4px hsl(220 20% 10% / 0.08);
+  }
+
+  /* ============================================================
+     CSS VARIABLES — Dark Mode
+     ============================================================ */
+  .dark {
+    --background:        220 18%  8%;   /* Very dark navy */
+    --foreground:         40 15% 90%;   /* Light cream */
+
+    --card:              220 16% 11%;
+    --card-foreground:    40 15% 90%;
+    --popover:           220 16% 11%;
+    --popover-foreground: 40 15% 90%;
+
+    --primary:            40 20% 90%;   /* Light cream */
+    --primary-foreground:220 18%  8%;
+
+    --secondary:         220 14% 16%;
+    --secondary-foreground: 40 15% 90%;
+
+    --accent:            150 25% 35%;
+    --accent-foreground:  40 15% 95%;
+
+    --muted:             220 14% 16%;
+    --muted-foreground:  220 10% 55%;
+
+    --destructive:         0 55% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --success:           150 40% 38%;
+    --success-foreground:  0 0% 100%;
+    --warning:            38 80% 50%;
+    --warning-foreground:220 20% 10%;
+    --info:              210 55% 45%;
+    --info-foreground:     0 0% 100%;
+
+    --border:            220 14% 18%;
+    --input:             220 14% 18%;
+    --ring:               40 20% 90%;
+
+    --sidebar-background:        220 16% 10%;
+    --sidebar-foreground:         40 12% 75%;
+    --sidebar-primary:            40 20% 90%;
+    --sidebar-primary-foreground:220 18%  8%;
+    --sidebar-accent:            220 14% 15%;
+    --sidebar-accent-foreground:  40 15% 90%;
+    --sidebar-border:            220 14% 16%;
+    --sidebar-ring:               40 20% 90%;
+
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+    --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.3);
+    --shadow-lg: 0 12px 32px -4px hsl(0 0% 0% / 0.4);
+  }
+
+  /* ============================================================
+     BASE ELEMENT STYLES
+     ============================================================ */
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'DM Sans', sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    @apply font-bold tracking-tight;
+  }
+}
+
+/* ============================================================
+   COMPONENT UTILITIES
+   ============================================================ */
+@layer components {
+  /* Section label — uppercase eyebrow text */
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground;
+  }
+
+  /* Metric display */
+  .metric-value {
+    @apply text-3xl font-bold text-foreground;
+  }
+  .metric-label {
+    @apply text-sm font-medium text-muted-foreground;
+  }
+
+  /* Elevated card */
+  .card-elevated {
+    @apply rounded-lg border bg-card p-6;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 200ms ease;
+  }
+  .card-elevated:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Status badge base — combine with a modifier below */
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .status-success {
+    background-color: hsl(var(--success) / 0.12);
+    color: hsl(var(--success));
+  }
+  .status-warning {
+    background-color: hsl(var(--warning) / 0.12);
+    color: hsl(var(--warning));
+  }
+  .status-destructive {
+    background-color: hsl(var(--destructive) / 0.12);
+    color: hsl(var(--destructive));
+  }
+  .status-info {
+    background-color: hsl(var(--info) / 0.12);
+    color: hsl(var(--info));
+  }
+}
+
+/* ============================================================
+   KEYFRAME ANIMATIONS
+   ============================================================ */
+@keyframes accordion-down {
+  from { height: 0; }
+  to   { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to   { height: 0; }
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+
+/*
+  ============================================================
+  TAILWIND CONFIG (tailwind.config.ts)
+  ============================================================
+
+  Copy this into your tailwind.config.ts:
+
+import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
+
+const config: Config = {
+  darkMode: ["class"],
+  content: ["./index.html", "./src/**\/*.{ts,tsx,js,jsx}"],
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: { "2xl": "1400px" },
+    },
+    extend: {
+      fontFamily: {
+        sans:    ["DM Sans", "sans-serif"],
+        heading: ["Space Grotesk", "sans-serif"],
+        display: ["Playfair Display", "serif"],
+      },
+      colors: {
+        border:      "hsl(var(--border))",
+        input:       "hsl(var(--input))",
+        ring:        "hsl(var(--ring))",
+        background:  "hsl(var(--background))",
+        foreground:  "hsl(var(--foreground))",
+        primary:     { DEFAULT: "hsl(var(--primary))",     foreground: "hsl(var(--primary-foreground))"     },
+        secondary:   { DEFAULT: "hsl(var(--secondary))",   foreground: "hsl(var(--secondary-foreground))"   },
+        destructive: { DEFAULT: "hsl(var(--destructive))", foreground: "hsl(var(--destructive-foreground))" },
+        muted:       { DEFAULT: "hsl(var(--muted))",       foreground: "hsl(var(--muted-foreground))"       },
+        accent:      { DEFAULT: "hsl(var(--accent))",      foreground: "hsl(var(--accent-foreground))"      },
+        popover:     { DEFAULT: "hsl(var(--popover))",     foreground: "hsl(var(--popover-foreground))"     },
+        card:        { DEFAULT: "hsl(var(--card))",        foreground: "hsl(var(--card-foreground))"        },
+        success:     { DEFAULT: "hsl(var(--success))",     foreground: "hsl(var(--success-foreground))"     },
+        warning:     { DEFAULT: "hsl(var(--warning))",     foreground: "hsl(var(--warning-foreground))"     },
+        info:        { DEFAULT: "hsl(var(--info))",        foreground: "hsl(var(--info-foreground))"        },
+        sidebar: {
+          DEFAULT:            "hsl(var(--sidebar-background))",
+          foreground:         "hsl(var(--sidebar-foreground))",
+          primary:            "hsl(var(--sidebar-primary))",
+          "primary-foreground":"hsl(var(--sidebar-primary-foreground))",
+          accent:             "hsl(var(--sidebar-accent))",
+          "accent-foreground":"hsl(var(--sidebar-accent-foreground))",
+          border:             "hsl(var(--sidebar-border))",
+          ring:               "hsl(var(--sidebar-ring))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down":  { from: { height: "0" },                                    to: { height: "var(--radix-accordion-content-height)" } },
+        "accordion-up":    { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },
+        "fade-in":         { from: { opacity: "0", transform: "translateY(8px)" },      to: { opacity: "1", transform: "translateY(0)" } },
+        "slide-in-left":   { from: { opacity: "0", transform: "translateX(-12px)" },    to: { opacity: "1", transform: "translateX(0)" } },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up":   "accordion-up 0.2s ease-out",
+        "fade-in":        "fade-in 0.4s ease-out",
+        "slide-in-left":  "slide-in-left 0.3s ease-out",
+      },
+    },
+  },
+  plugins: [animate],
+};
+
+export default config;
+*/

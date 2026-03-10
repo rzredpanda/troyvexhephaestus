@@ -1,0 +1,274 @@
+# VEX Inventory System Final Build Spec
+
+
+This document is the single Markdown deliverable with 3 required sections:
+1. **Claude Code Prompt**
+2. **PRD**
+3. **Implementation Plan**
+
+
+Target stack: **Next.js + Supabase + Vercel + GitHub auto-deploy**
+
+
+---
+
+
+## 1) Claude Code Prompt
+
+
+```md
+You are a senior full-stack engineer. Build a production-ready MVP for a VEX Inventory Management System.
+
+
+## Core Stack
+- Next.js (App Router, TypeScript)
+- Tailwind CSS
+- Supabase (Postgres, Auth, Storage, RLS)
+- Vercel deployment linked to GitHub repo with automatic deploy on push to `main`
+
+
+## Auth and Access
+- Use internal email/password authentication only (no Google OAuth in v1).
+- Roles:
+  - owner: full access (users, settings, inventory, catalog, trades, imports)
+  - admin: inventory mutations (push/pull/trade/import), no global user management
+  - member: read-only with full organization visibility
+
+
+## Team Data Model
+- Seed 7 teams, but allow owner to add/archive teams later.
+- Implement team "sub-database" behavior in one Supabase DB using `team_id` and strict RLS.
+
+
+## Mandatory Product Features
+1. Dashboard
+- Actionable metrics only:
+  - inventory health and low-stock risk
+  - month-to-date spend vs budget
+  - annual spend
+  - top cost-driving parts
+  - reorder recommendations
+- Filters: overall and team scopes.
+
+
+2. Catalog
+- One-time import/crawl of VEX V5 catalog (name, SKU, price).
+- Fast search by SKU, part ID, and name.
+- Manual owner-triggered re-import endpoint.
+
+
+3. Inventory Workflows
+- Checkout/withdraw page with quantity and threshold-based photo proof.
+- Return workflow with condition tracking.
+- Trade workflow (team-to-team) with strict DB transactions for atomic consistency.
+- Room-level storage tracking.
+
+
+4. Logs and History
+- Public-to-org history (all authenticated users can read).
+- Immutable attempt logs + approval workflow list:
+  - attempted logs
+  - approved logs
+- Action execution should not be blocked by log approval flow.
+
+
+5. Additional Required Features
+- Wanted list
+- CSV strict preview import with row-level errors and rollback on invalid commit
+- Monthly cycle counts
+- Event prep checklist
+- BOM feature (owner/admin only)
+- Export-only purchasing workflow (no full PO system in v1)
+- Weekly recommendation refresh
+
+
+6. Notifications and Reliability
+- In-app + email notifications (Supabase email path)
+- Supabase region: US West
+- Reliability target:
+  - RPO < 24h
+  - RTO < 4h
+- Weekly backup restore verification report
+- Nightly (2:00 AM America/Los_Angeles) sanitized snapshot logs committed to GitHub `main` under `/logs`
+
+
+## UI/UX Requirements
+- Left rail navigation + top filter bar
+- Light/dark mode with system default
+- WCAG AA baseline
+- Bold typography and strong visual hierarchy inspired by:
+  - https://altruistic-network-682455.framer.app/
+
+
+## Public Interfaces and Data Contracts
+
+
+### Enums
+- Role = owner | admin | member
+- Scope = overall | team
+- Action = add | withdraw | return | adjust | trade_in | trade_out | import
+- LogStatus = attempted | approved | rejected
+
+
+### Core Endpoints
+- GET /api/dashboard/summary
+- GET /api/inventory
+- POST /api/withdrawals
+- POST /api/returns
+- POST /api/trades
+- GET /api/history
+- GET /api/logs/attempted
+- GET /api/logs/approved
+- POST /api/catalog/import/vex
+- GET /api/catalog/search
+- POST /api/import/csv
+- GET /api/settings/*
+- PUT /api/settings/*
+- POST /api/users
+- PATCH /api/users/:id
+- DELETE /api/users/:id
+
+
+### Required Setup Artifacts
+- supabase/sql/01_schema_seed.sql
+- supabase/sql/02_rls.sql
+- supabase/sql/03_dashboard_views.sql
+- .env.example
+- npm run supabase:verify
+- GitHub Action for nightly `/logs` snapshot commit
+
+
+## Deliverables
+- Working app with seeded teams and role model
+- SQL schema, RLS, views, and seed scripts
+- Basic test coverage for critical flows
+- README with setup, deployment, backup/restore process, and operations notes
+```
+
+
+---
+
+
+## 2) PRD
+
+
+### Product Goal
+Build a practical inventory platform for VEX operations (up to ~50 users) that provides accurate stock control, clear spend visibility, and reliable team workflows.
+
+
+### Users and Roles
+- **Owner**
+  - Full platform control
+  - User CRUD (add/edit/deactivate/delete)
+  - Team management
+  - Settings management
+- **Admin**
+  - Inventory operations: add, withdraw, return, trade, import
+  - No global user management
+- **Member**
+  - Read-only access
+  - Full organization-level transparency on dashboards and history
+
+
+### Functional Requirements
+- Team-aware inventory with overall + team filtering.
+- VEX V5 catalog import (one-time initial crawl/import; manual rerun available).
+- Fast catalog search (SKU, name, part ID).
+- Checkout/withdraw and returns with condition tracking and photo proof threshold rules.
+- Trades between teams with transactional integrity.
+- Immutable audit trail with separate attempted and approved log views.
+- History visible to all authenticated users.
+- Wanted list, event prep checklist, and owner/admin BOM support.
+- CSV strict preview import with strong validation and row-level error output.
+- Analytics:
+  - monthly spend
+  - annual spend
+  - top spend parts
+  - recommendation output refreshed weekly
+
+
+### Non-Functional Requirements
+- Accessibility: WCAG AA baseline.
+- Security: strict RLS, role checks, immutable activity records.
+- Reliability targets: RPO < 24h, RTO < 4h.
+- Backup ops: weekly restore verification with surfaced status.
+- Performance: fast search and responsive dashboards at target scale.
+
+
+### Acceptance Criteria
+- Role permissions match matrix exactly.
+- Members have read-only org-wide visibility.
+- Concurrent inventory changes do not corrupt balances.
+- All inventory mutations appear in attempted logs; approved log state is queryable.
+- Dashboard shows actionable metrics tied to real operations.
+- Nightly sanitized logs are committed to `/logs` on GitHub `main`.
+
+
+### Assumptions and Defaults
+- Public history means public to authenticated org users only.
+- VEX catalog import is one-time initial load with manual owner rerun.
+- Approval pipeline validates logs, but does not gate action execution in v1.
+- Export permissions are available to all roles as requested.
+- No external read/write API in v1.
+
+
+---
+
+
+## 3) Implementation Plan
+
+
+### Phase 1: Foundation and Data
+- Bootstrap Next.js + Tailwind + Supabase clients.
+- Implement auth (email/password) and role-aware route guards.
+- Create SQL artifacts:
+  - `supabase/sql/01_schema_seed.sql`
+  - `supabase/sql/02_rls.sql`
+  - `supabase/sql/03_dashboard_views.sql`
+- Seed 7 teams and support team add/archive.
+
+
+### Phase 2: Core Operations
+- Build catalog and VEX import endpoint (`POST /api/catalog/import/vex`).
+- Build inventory balance + movement ledger.
+- Implement withdrawal, returns, trades, and room/condition tracking.
+- Enforce atomic DB transactions for all mutating inventory operations.
+
+
+### Phase 3: Visibility and Controls
+- Build dashboard summary endpoint and views with scope filters.
+- Implement history pages plus attempted vs approved log pages.
+- Add owner panel for user CRUD and settings controls.
+- Add wanted list, event prep checklist, BOM (owner/admin only), and export-only purchasing outputs.
+
+
+### Phase 4: Imports, Recommendations, and Reliability
+- Implement strict CSV preview/import pipeline with rollback protections.
+- Add weekly recommendation refresh jobs.
+- Add in-app + email notifications.
+- Add nightly sanitized log snapshot job to commit `/logs` in GitHub `main`.
+- Configure backup status visibility and weekly restore verification reporting.
+
+
+### Phase 5: Deployment and Verification
+- Connect GitHub to Vercel and validate auto-deploy on push to `main`.
+- Add `.env.example`.
+- Add `npm run supabase:verify`.
+- Finalize README with local setup, Supabase setup, deployment, and operations runbook.
+
+
+### Test Strategy
+- Permission matrix tests across all endpoints (`owner/admin/member`).
+- Concurrency tests for withdrawals and trades.
+- History visibility and log-state pipeline tests.
+- VEX import tests: dedupe, parse failures, indexing/search behavior.
+- CSV strict-preview tests including row-level error handling and rollback.
+- Dashboard metric correctness tests against fixture ledgers.
+- Backup/restore verification status tests.
+- UI smoke tests:
+  - light/dark mode
+  - responsive layout
+  - WCAG AA essentials
+
+
+
