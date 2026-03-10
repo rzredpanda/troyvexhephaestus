@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import type { Team } from "@/lib/types";
 
@@ -13,6 +13,7 @@ export default function SettingsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [fullName, setFullName] = useState("");
   const [teamId, setTeamId] = useState("");
+  const [seedLoading, setSeedLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/settings").then((r) => r.json()).then((p) => {
@@ -32,6 +33,15 @@ export default function SettingsPage() {
     });
     if (res.ok) toast.success("Settings saved");
     else toast.error("Failed to save");
+  }
+
+  async function handleSeedDemo() {
+    setSeedLoading(true);
+    const res = await fetch("/api/seed", { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) toast.error(data.error ?? "Seed failed");
+    else toast.success(data.message ?? "Demo data seeded");
+    setSeedLoading(false);
   }
 
   if (!profile) return <p className="text-muted-foreground">Loading…</p>;
@@ -69,6 +79,26 @@ export default function SettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      {profile.role === "owner" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Demo Data</CardTitle>
+            <CardDescription>
+              Populate the system with sample VEX V5 catalog items, inventory across all teams, wanted items, checklists, and a BOM. Safe to run multiple times (upserts).
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              onClick={handleSeedDemo}
+              disabled={seedLoading}
+            >
+              {seedLoading ? "Seeding…" : "Seed Demo Data"}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
