@@ -20,7 +20,7 @@ export function InventoryTable({ items }: Props) {
   }
 
   return (
-    <div className="card-elevated overflow-hidden p-0">
+    <div className="card-elevated overflow-x-auto p-0">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-muted/40">

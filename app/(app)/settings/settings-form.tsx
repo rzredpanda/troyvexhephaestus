@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import type { Team, Profile } from "@/lib/types";
@@ -83,87 +84,42 @@ export function SettingsForm({
     else toast.error("Failed to delete");
   }
 
+  const tabs = profile.role === "owner"
+    ? ["profile", "users", "system"]
+    : ["profile"];
+
   return (
-    <div className="space-y-6 max-w-lg">
+    <div className="space-y-6">
       <h1 className="font-heading text-3xl font-bold">Settings</h1>
 
-      <Card>
-        <CardHeader><CardTitle>Profile</CardTitle></CardHeader>
-        <CardContent>
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <Input value={profile.email} disabled className="bg-muted" />
-            </div>
-            <div className="space-y-2">
-              <Label>Role</Label>
-              <Input value={profile.role} disabled className="bg-muted capitalize" />
-            </div>
-            <div className="space-y-2">
-              <Label>Full Name</Label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your name" />
-            </div>
-            <div className="space-y-2">
-              <Label>Team</Label>
-              <Select value={teamId} onValueChange={setTeamId}>
-                <SelectTrigger><SelectValue placeholder="No team" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">No team</SelectItem>
-                  {teams.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="w-full">Save Changes</Button>
-          </form>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="profile">
+        <TabsList>
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          {profile.role === "owner" && <TabsTrigger value="users">Users</TabsTrigger>}
+          {profile.role === "owner" && <TabsTrigger value="system">System</TabsTrigger>}
+        </TabsList>
 
-      {profile.role === "owner" && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Demo Data</CardTitle>
-            <CardDescription>
-              Populate the system with sample VEX V5 catalog items, inventory across all teams, wanted items, checklists, and a BOM. Safe to run multiple times (upserts).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" onClick={handleSeedDemo} disabled={seedLoading}>
-              {seedLoading ? "Seeding…" : "Seed Demo Data"}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {profile.role === "owner" && (
-        <>
-          <Card>
-            <CardHeader><CardTitle>Invite User</CardTitle></CardHeader>
+        {/* ── Profile tab ── */}
+        <TabsContent value="profile" className="mt-6">
+          <Card className="max-w-md">
+            <CardHeader><CardTitle>Your Profile</CardTitle></CardHeader>
             <CardContent>
-              <form onSubmit={handleCreateUser} className="space-y-4">
+              <form onSubmit={handleSave} className="space-y-4">
                 <div className="space-y-2">
                   <Label>Email</Label>
-                  <Input type="email" value={userForm.email} onChange={(e) => setUserForm((f) => ({ ...f, email: e.target.value }))} required />
-                </div>
-                <div className="space-y-2">
-                  <Label>Password</Label>
-                  <Input type="password" value={userForm.password} onChange={(e) => setUserForm((f) => ({ ...f, password: e.target.value }))} required />
-                </div>
-                <div className="space-y-2">
-                  <Label>Full Name</Label>
-                  <Input value={userForm.full_name} onChange={(e) => setUserForm((f) => ({ ...f, full_name: e.target.value }))} />
+                  <Input value={profile.email} disabled className="bg-muted" />
                 </div>
                 <div className="space-y-2">
                   <Label>Role</Label>
-                  <Select value={userForm.role} onValueChange={(v) => setUserForm((f) => ({ ...f, role: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {["member", "admin", "owner"].map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <Input value={profile.role} disabled className="bg-muted capitalize" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Team (optional)</Label>
-                  <Select value={userForm.team_id} onValueChange={(v) => setUserForm((f) => ({ ...f, team_id: v }))}>
+                  <Label>Full Name</Label>
+                  <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your name" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Team</Label>
+                  <Select value={teamId} onValueChange={setTeamId}>
                     <SelectTrigger><SelectValue placeholder="No team" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__none__">No team</SelectItem>
@@ -171,37 +127,113 @@ export function SettingsForm({
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="submit" className="w-full" disabled={userLoading}>{userLoading ? "Creating…" : "Create User"}</Button>
+                <Button type="submit" className="w-full">Save Changes</Button>
               </form>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card>
-            <CardHeader><CardTitle>All Users</CardTitle></CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y">
-                {users.map((u) => (
-                  <div key={u.id} className="flex items-center justify-between px-6 py-3">
-                    <div>
-                      <p className="font-medium text-sm">{u.full_name || u.email}</p>
-                      <p className="text-xs text-muted-foreground">{u.email} · {u.team?.name ?? "No team"}</p>
+        {/* ── Users tab (owner only) ── */}
+        {profile.role === "owner" && (
+          <TabsContent value="users" className="mt-6 space-y-6">
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Create user form */}
+              <Card>
+                <CardHeader><CardTitle>Invite User</CardTitle></CardHeader>
+                <CardContent>
+                  <form onSubmit={handleCreateUser} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input type="email" value={userForm.email} onChange={(e) => setUserForm((f) => ({ ...f, email: e.target.value }))} required />
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Select value={u.role} onValueChange={(v) => handleRoleChange(u.id, v)}>
-                        <SelectTrigger className="h-8 w-28"><SelectValue /></SelectTrigger>
+                    <div className="space-y-2">
+                      <Label>Password</Label>
+                      <Input type="password" value={userForm.password} onChange={(e) => setUserForm((f) => ({ ...f, password: e.target.value }))} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Full Name</Label>
+                      <Input value={userForm.full_name} onChange={(e) => setUserForm((f) => ({ ...f, full_name: e.target.value }))} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Role</Label>
+                      <Select value={userForm.role} onValueChange={(v) => setUserForm((f) => ({ ...f, role: v }))}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {["member", "admin", "owner"].map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                         </SelectContent>
                       </Select>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(u.id)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </>
-      )}
+                    <div className="space-y-2">
+                      <Label>Team (optional)</Label>
+                      <Select value={userForm.team_id} onValueChange={(v) => setUserForm((f) => ({ ...f, team_id: v }))}>
+                        <SelectTrigger><SelectValue placeholder="No team" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__none__">No team</SelectItem>
+                          {teams.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={userLoading}>
+                      {userLoading ? "Creating…" : "Create User"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {/* User list */}
+              <Card>
+                <CardHeader><CardTitle>All Users ({users.length})</CardTitle></CardHeader>
+                <CardContent className="p-0">
+                  {users.length === 0 ? (
+                    <p className="px-6 py-4 text-sm text-muted-foreground">No users yet.</p>
+                  ) : (
+                    <div className="divide-y">
+                      {users.map((u) => (
+                        <div key={u.id} className="flex items-center justify-between px-6 py-3 gap-3">
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm truncate">{u.full_name || u.email}</p>
+                            <p className="text-xs text-muted-foreground truncate">{u.email} · {u.team?.name ?? "No team"}</p>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <Select value={u.role} onValueChange={(v) => handleRoleChange(u.id, v)}>
+                              <SelectTrigger className="h-8 w-24 text-xs"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                {["member", "admin", "owner"].map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteUser(u.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        )}
+
+        {/* ── System tab (owner only) ── */}
+        {profile.role === "owner" && (
+          <TabsContent value="system" className="mt-6">
+            <Card className="max-w-md">
+              <CardHeader>
+                <CardTitle>Demo Data</CardTitle>
+                <CardDescription>
+                  Populate with sample VEX V5 catalog items, inventory across all teams, wanted items, and checklists. Safe to run multiple times (upserts).
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" onClick={handleSeedDemo} disabled={seedLoading}>
+                  {seedLoading ? "Seeding…" : "Seed Demo Data"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   );
 }
