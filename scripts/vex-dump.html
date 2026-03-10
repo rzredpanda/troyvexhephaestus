@@ -1,0 +1,101 @@
+
+        <div class="page-wrapper">
+            <main id="maincontent" class="page-main">
+                <div class="columns">
+                    <div class="column main">
+                        <div data-content-type="html" data-appearance="default" data-element="main" data-decoded="true"><style>
+
+/* =========================================
+   HARD OVERRIDE: Heading hierarchy reset
+   ========================================= */
+
+/* H1 */
+html body h1 {
+  font-size: 3.0rem !important;
+  line-height: 1.25 !important;
+  margin-bottom: 0.75rem !important;
+  color: #000 !important;
+}
+
+/* H2 */
+html body h2 {
+  font-size: 2.5rem !important;
+  line-height: 1.3 !important;
+  margin-top: 1.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #000 !important;
+}
+
+/* H3 */
+html body h3 {
+  font-size: 2.0rem !important;
+  line-height: 1.3 !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #000 !important;
+}
+
+/* H4 */
+html body h4 {
+  font-size: 1.5rem !important;
+  line-height: 1.3 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.4rem !important;
+  color: #000 !important;
+}
+
+/* =========================================
+   Mobile refinement (still overrides all)
+   ========================================= */
+@media (max-width: 768px) {
+  html body h1 { font-size: 1.9rem !important; }
+  html body h2 { font-size: 1.45rem !important; }
+  html body h3 { font-size: 1.2rem !important; }
+  html body h4 { font-size: 1.05rem !important; }
+}
+
+.copy-button {
+  margin: 10px 0;
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #5397FD;
+  background-color: #5397FD;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.copy-button:hover {
+  background-color: #1f6fe0;
+  border-color: #1f6fe0;
+}
+
+.copy-button.copied {
+  background-color: #28a745;
+  border-color: #28a745;
+  cursor: default;
+}
+
+.email-button {
+  margin: 20px 0;
+  padding: 10px 18px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #28a745;
+  background-color: #28a745;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.email-button:hover {
+  background-color: #218838;
+  border-color: #218838;
+}
+
+.responsive-logo {
+  width: clamp(160px, 20vw, 300px);
+}
+
+</style>
+
+<center><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNDAuOSAxMDYuNyI+CiAgPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI5LjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDIuMS4wIEJ1aWxkIDExNikgIC0tPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuc3QwIHsKICAgICAgICBmaWxsOiAjZDcyODJmOwogICAgICB9CgogICAgICAuc3QxIHsKICAgICAgICBmaWxsOiAjODk4YThkOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMS42LDg4LjVoMTIuOWM0LjYsMCw1LjQsMS41LDUuNCw0LjZ2MS4zYzAsMi4zLTEuMywyLjktMywzaDBjMi4yLjQsMi44LDEuNiwyLjgsM3Y0LjFoLTJ2LTMuNWMwLTIuNS0xLjItMi44LTMuMi0yLjhIMy43djYuM0gxLjZzMC0xNiwwLTE2Wk0xNC4yLDk2LjVjMi40LDAsMy40LS42LDMuNC0yLjN2LTEuNWMwLTEuOC0uOC0yLjQtNC0yLjRIMy43djYuMmgxMC41WiIvPgogIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0zNC4zLDk0LjRjMC00LjEsMS40LTYsNS43LTZoOS4yYzQuMywwLDUuNywyLDUuNyw2djQuNGMwLDQuMS0xLjQsNi01LjcsNmgtOS4zYy00LjMsMC01LjctMi01LjctNiwwLDAsMC00LjQsMC00LjRaTTUyLjksOTMuNWMwLTIuOC0xLjctMy40LTMuOC0zLjRoLTguOGMtMi4xLDAtMy44LjYtMy44LDMuNHY2YzAsMi44LDEuNywzLjQsMy44LDMuNGg4LjhjMi4xLDAsMy44LS42LDMuOC0zLjR2LTZaIi8+CiAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTcwLDg4LjVoMTMuN2MzLjMsMCw0LjMsMS43LDQuMywzLjZ2MS40YzAsMS4yLS43LDIuMy0yLjYsMi41aDBjMS43LjIsMy4yLjgsMy4yLDMuM3YxLjljMCwyLjItMiwzLjQtNC43LDMuNGgtMTMuOXYtMTYuMVpNODUuOCw5MmMwLTEuNS0xLjYtMS43LTIuMy0xLjdoLTExLjN2NS4xaDExLjJjMS4yLDAsMi40LS40LDIuNC0yLDAsMCwwLTEuNCwwLTEuNFpNODYuNCw5OS41YzAtMi0xLjEtMi4zLTMuMS0yLjNoLTExLjJ2NS42aDExLjVjMiwwLDIuOC0uNywyLjgtMi4yLDAsMCwwLTEuMiwwLTEuMloiLz4KICA8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTAzLjIsOTQuNGMwLTQuMSwxLjQtNiw1LjctNmg5LjNjNC40LDAsNS43LDIsNS43LDZ2NC40YzAsNC4xLTEuNCw2LTUuNyw2aC05LjJjLTQuMywwLTUuNy0yLTUuNy02LDAsMCwwLTQuNCwwLTQuNFpNMTIxLjcsOTMuNWMwLTIuOC0xLjctMy40LTMuOC0zLjRoLTguOGMtMi4xLDAtMy44LjYtMy44LDMuNHY2YzAsMi44LDEuNywzLjQsMy44LDMuNGg4LjhjMi4xLDAsMy44LS42LDMuOC0zLjR2LTZaIi8+CiAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTE0NS4yLDkwLjNoLTguMXYtMS44aDE4LjR2MS44aC04LjJ2MTQuM2gtMi4ydi0xNC4zWiIvPgogIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xNjkuMiw4OC41aDIuMXYxNi4xaC0yLjJ2LTE2LjFaIi8+CiAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTE4Ni40LDk0LjRjMC00LjEsMS40LTYsNS43LTZoOC4zYzQsMCw1LDEuOCw1LDR2MS40aC0xLjl2LS43YzAtMi43LTEuNy0yLjktMy43LTIuOWgtNy41Yy0yLjEsMC0zLjguNi0zLjgsMy40djZjMCwyLjgsMS43LDMuNCwzLjgsMy40aDcuNmMyLjksMCwzLjgtLjYsMy44LTIuOHYtMWgydjEuMWMwLDIuOS0uOSw0LjUtNS40LDQuNWgtOC4yYy00LjQsMC01LjctMi01LjctNnYtNC40cTAsMCwwLDBaIi8+CiAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTIyMCw5OS41aDJ2MS4xYzAsMS42LjksMi4zLDMuNiwyLjNoNi44YzMuMSwwLDQuMS0uNyw0LjEtM3MtLjgtMi41LTMuNS0yLjVoLTQuMWMtNi42LDAtOC44LS40LTguOC00LjdzMi4yLTQuNSw2LjctNC41aDQuN2M1LjQsMCw2LjcsMS40LDYuNyw0LjJ2LjZoLTJjMC0yLjYtLjMtMy02LTNoLTIuM2MtNC4yLDAtNS43LjItNS43LDIuOXMuNiwyLjYsNCwyLjZoNi40YzQuMiwwLDYsMS4yLDYsNHYx
