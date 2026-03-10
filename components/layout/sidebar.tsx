@@ -12,23 +12,21 @@ import {
   CheckSquare,
   Upload,
   Settings,
-  Users,
-  Layers,
+  ArrowDownFromLine,
 } from "lucide-react";
 import type { Role } from "@/lib/types";
 
 const navItems = [
-  { href: "/",               label: "Dashboard", icon: LayoutDashboard, roles: ["owner","admin","member"] as Role[] },
-  { href: "/inventory",      label: "Inventory",  icon: Package,          roles: ["owner","admin","member"] as Role[] },
-  { href: "/catalog",        label: "Catalog",    icon: BookOpen,         roles: ["owner","admin","member"] as Role[] },
-  { href: "/history",        label: "History",    icon: History,          roles: ["owner","admin","member"] as Role[] },
-  { href: "/logs/attempted", label: "Logs",       icon: FileText,         roles: ["owner","admin","member"] as Role[] },
-  { href: "/wanted",         label: "Wanted",     icon: Heart,            roles: ["owner","admin","member"] as Role[] },
-  { href: "/checklist",      label: "Checklist",  icon: CheckSquare,      roles: ["owner","admin","member"] as Role[] },
-  { href: "/bom",            label: "BOM",        icon: Layers,           roles: ["owner","admin"] as Role[] },
-  { href: "/import",         label: "Import",     icon: Upload,           roles: ["owner","admin"] as Role[] },
-  { href: "/users",          label: "Users",      icon: Users,            roles: ["owner"] as Role[] },
-  { href: "/settings",       label: "Settings",   icon: Settings,         roles: ["owner","admin","member"] as Role[] },
+  { href: "/",               label: "Dashboard",   icon: LayoutDashboard,   roles: ["owner","admin","member"] as Role[] },
+  { href: "/inventory",      label: "Inventory",   icon: Package,            roles: ["owner","admin","member"] as Role[] },
+  { href: "/withdrawals",    label: "Withdrawals", icon: ArrowDownFromLine,  roles: ["owner","admin"] as Role[] },
+  { href: "/catalog",        label: "Catalog",     icon: BookOpen,           roles: ["owner","admin","member"] as Role[] },
+  { href: "/history",        label: "History",     icon: History,            roles: ["owner","admin","member"] as Role[] },
+  { href: "/logs/attempted", label: "Logs",        icon: FileText,           roles: ["owner","admin","member"] as Role[] },
+  { href: "/wanted",         label: "Wanted",      icon: Heart,              roles: ["owner","admin","member"] as Role[] },
+  { href: "/checklist",      label: "Checklist",   icon: CheckSquare,        roles: ["owner","admin","member"] as Role[] },
+  { href: "/import",         label: "Import",      icon: Upload,             roles: ["owner","admin"] as Role[] },
+  { href: "/settings",       label: "Settings",    icon: Settings,           roles: ["owner","admin","member"] as Role[] },
 ];
 
 export function Sidebar({ role }: { role: Role }) {

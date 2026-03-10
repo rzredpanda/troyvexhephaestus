@@ -1,7 +1,10 @@
 "use client";
+import Link from "next/link";
 import type { InventoryItem } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
+import { ArrowLeftRight } from "lucide-react";
 
 interface Props {
   items: InventoryItem[];
@@ -29,12 +32,14 @@ export function InventoryTable({ items }: Props) {
             <th className="px-4 py-3 text-right font-semibold">Min</th>
             <th className="px-4 py-3 text-right font-semibold">Unit Price</th>
             <th className="px-4 py-3 text-center font-semibold">Status</th>
+            <th className="px-4 py-3 text-center font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => {
             const isOut = item.quantity === 0;
             const isLow = item.quantity > 0 && item.quantity <= item.threshold;
+            const tradeHref = `/inventory/trade?from_team_id=${item.team_id}&catalog_item_id=${item.catalog_item_id}${item.catalog_item?.name ? `&catalog_item_name=${encodeURIComponent(item.catalog_item.name)}` : ""}`;
             return (
               <tr key={item.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
                 <td className="px-4 py-3 font-medium">{item.catalog_item?.name ?? "—"}</td>
@@ -54,6 +59,11 @@ export function InventoryTable({ items }: Props) {
                   ) : (
                     <Badge variant="outline" className="border-success text-success">OK</Badge>
                   )}
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+                    <Link href={tradeHref}><ArrowLeftRight className="h-3 w-3 mr-1" />Trade</Link>
+                  </Button>
                 </td>
               </tr>
             );

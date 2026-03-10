@@ -9,13 +9,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import type { Team, CatalogItem } from "@/lib/types";
 
-export function TradeForm({ teams }: { teams: Team[] }) {
+export function TradeForm({
+  teams,
+  defaultFromTeamId,
+  defaultCatalogItemId,
+  defaultCatalogItemName,
+}: {
+  teams: Team[];
+  defaultFromTeamId?: string;
+  defaultCatalogItemId?: string;
+  defaultCatalogItemName?: string;
+}) {
   const router = useRouter();
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
   const [search, setSearch] = useState("");
-  const [fromTeamId, setFromTeamId] = useState("");
+  const [fromTeamId, setFromTeamId] = useState(defaultFromTeamId ?? "");
   const [toTeamId, setToTeamId] = useState("");
-  const [catalogItemId, setCatalogItemId] = useState("");
+  const [catalogItemId, setCatalogItemId] = useState(defaultCatalogItemId ?? "");
   const [quantity, setQuantity] = useState(1);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
@@ -74,17 +84,26 @@ export function TradeForm({ teams }: { teams: Team[] }) {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Search Part</Label>
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or SKU…" />
-              {catalogItems.length > 0 && (
-                <Select value={catalogItemId} onValueChange={setCatalogItemId}>
-                  <SelectTrigger><SelectValue placeholder="Select part" /></SelectTrigger>
-                  <SelectContent>
-                    {catalogItems.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name} — {c.sku}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <Label>Part</Label>
+              {defaultCatalogItemName && !search && catalogItemId === defaultCatalogItemId ? (
+                <div className="flex gap-2">
+                  <Input value={defaultCatalogItemName} disabled className="bg-muted flex-1" />
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCatalogItemId(""); }}>Change</Button>
+                </div>
+              ) : (
+                <>
+                  <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or SKU…" />
+                  {catalogItems.length > 0 && (
+                    <Select value={catalogItemId} onValueChange={setCatalogItemId}>
+                      <SelectTrigger><SelectValue placeholder="Select part" /></SelectTrigger>
+                      <SelectContent>
+                        {catalogItems.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>{c.name} — {c.sku}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </>
               )}
             </div>
             <div className="space-y-2">
