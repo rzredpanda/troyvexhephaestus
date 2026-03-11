@@ -9,22 +9,22 @@ import {
 } from "lucide-react";
 import type { Role } from "@/lib/types";
 
-type NavItem = { href: string; label: string; icon: React.ElementType; roles: Role[] };
+type NavItem = { href: string; label: string; icon: React.ElementType; roles: Role[]; tutorialId?: string };
 
 const sections: { label: string | null; items: NavItem[] }[] = [
   {
     label: null,
     items: [
-      { href: "/dashboard",   label: "Dashboard",   icon: LayoutDashboard,  roles: ["owner","admin","member"] },
-      { href: "/inventory",   label: "Inventory",   icon: Package,           roles: ["owner","admin","member"] },
-      { href: "/withdrawals", label: "Withdrawals", icon: ArrowDownFromLine, roles: ["owner","admin"] },
-      { href: "/trades",      label: "Trades",      icon: ArrowLeftRight,    roles: ["owner","admin"] },
+      { href: "/dashboard",   label: "Dashboard",   icon: LayoutDashboard,  roles: ["owner","admin","member"], tutorialId: "nav-dashboard" },
+      { href: "/inventory",   label: "Inventory",   icon: Package,           roles: ["owner","admin","member"], tutorialId: "nav-inventory" },
+      { href: "/withdrawals", label: "Withdrawals", icon: ArrowDownFromLine, roles: ["owner","admin"],          tutorialId: "nav-withdrawals" },
+      { href: "/trades",      label: "Trades",      icon: ArrowLeftRight,    roles: ["owner","admin"],          tutorialId: "nav-trades" },
     ],
   },
   {
     label: "Resources",
     items: [
-      { href: "/catalog",   label: "Catalog",   icon: BookOpen,    roles: ["owner","admin","member"] },
+      { href: "/catalog",   label: "Catalog",   icon: BookOpen,    roles: ["owner","admin","member"], tutorialId: "nav-catalog" },
       { href: "/wanted",    label: "Wanted",    icon: Heart,       roles: ["owner","admin","member"] },
       { href: "/checklist", label: "Checklist", icon: CheckSquare, roles: ["owner","admin","member"] },
     ],
@@ -40,7 +40,7 @@ const sections: { label: string | null; items: NavItem[] }[] = [
     label: "Admin",
     items: [
       { href: "/import",   label: "Import",   icon: Upload,   roles: ["owner","admin"] },
-      { href: "/settings", label: "Settings", icon: Settings, roles: ["owner","admin","member"] },
+      { href: "/settings", label: "Settings", icon: Settings, roles: ["owner","admin","member"], tutorialId: "nav-settings" },
     ],
   },
 ];
@@ -73,12 +73,13 @@ export function Sidebar({ role }: { role: Role }) {
                 </p>
               )}
               <div className="space-y-0.5">
-                {visible.map(({ href, label, icon: Icon }) => {
+                {visible.map(({ href, label, icon: Icon, tutorialId }) => {
                   const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
                   return (
                     <Link
                       key={href}
                       href={href}
+                      {...(tutorialId ? { "data-tutorial": tutorialId } : {})}
                       className={cn(
                         "group flex items-center gap-2.5 rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
                         active

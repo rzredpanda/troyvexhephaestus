@@ -24,8 +24,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [setupLoading, setSetupLoading] = useState(false);
-  const [showDemo, setShowDemo] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -56,23 +54,8 @@ export default function LoginPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) toast.error(error.message);
-    else { router.push("/"); router.refresh(); }
+    else { router.push("/dashboard"); router.refresh(); }
     setLoading(false);
-  }
-
-  async function handleSetupDemo() {
-    setSetupLoading(true);
-    const res = await fetch("/api/setup", { method: "POST" });
-    const data = await res.json();
-    if (!res.ok) {
-      toast.error(data.error ?? "Setup failed");
-    } else {
-      setEmail(data.email);
-      setPassword(data.password);
-      setShowDemo(true);
-      toast.success("Demo account ready — click Sign in");
-    }
-    setSetupLoading(false);
   }
 
   return (
@@ -123,21 +106,6 @@ export default function LoginPage() {
         </form>
       </div>
 
-      {/* Demo account */}
-      <div className="rounded-lg border border-dashed bg-card p-5 space-y-3">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Demo setup</p>
-        {showDemo && (
-          <p className="text-xs font-mono bg-muted rounded px-2 py-1.5 text-muted-foreground">
-            demo@vex.test / Demo1234!
-          </p>
-        )}
-        <Button variant="outline" size="sm" className="w-full text-xs" onClick={handleSetupDemo} disabled={setupLoading}>
-          {setupLoading ? "Setting up…" : "Create demo account"}
-        </Button>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          After signing in → Settings → System → Seed Demo Data.
-        </p>
-      </div>
     </div>
   );
 }
