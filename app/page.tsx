@@ -3,7 +3,20 @@ import Image from "next/image";
 import { getProfile } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const sp = await searchParams;
+
+  // Supabase sometimes delivers the OAuth code to the Site URL instead of
+  // /auth/callback when the redirect URL isn't whitelisted. Forward it.
+  if (sp.code) {
+    const qs = new URLSearchParams(sp).toString();
+    redirect(`/auth/callback?${qs}`);
+  }
+
   const profile = await getProfile();
   if (profile) redirect("/dashboard");
 
