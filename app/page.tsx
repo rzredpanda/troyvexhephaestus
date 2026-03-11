@@ -10,93 +10,66 @@ export default async function LandingPage() {
   return (
     <>
       <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
         @keyframes fadeIn {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.88); }
-          to   { opacity: 1; transform: scale(1); }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes hammerstrike {
-          0%   { transform: rotate(0deg) translateY(0); }
-          30%  { transform: rotate(-12deg) translateY(-6px); }
-          55%  { transform: rotate(8deg) translateY(3px); }
-          70%  { transform: rotate(-5deg) translateY(-2px); }
-          85%  { transform: rotate(3deg) translateY(1px); }
-          100% { transform: rotate(0deg) translateY(0); }
-        }
-        @keyframes glow {
-          0%, 100% { filter: brightness(1) drop-shadow(0 0 8px rgba(249,115,22,0.0)); }
-          50%       { filter: brightness(1.15) drop-shadow(0 0 24px rgba(249,115,22,0.55)); }
-        }
-        @keyframes sparks {
-          0%   { opacity: 0; transform: scale(0.7) translateY(4px); }
-          40%  { opacity: 1; transform: scale(1.1) translateY(-6px); }
-          100% { opacity: 0; transform: scale(0.8) translateY(-18px); }
-        }
-        .anim-logo   { animation: scaleIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
-        .anim-strike { animation: hammerstrike 0.7s ease-in-out 1.2s both; }
-        .anim-glow   { animation: glow 2.8s ease-in-out 1.2s infinite; }
-        .anim-sub    { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.7s both; }
-        .anim-btns   { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 1.0s both; }
-        .anim-nav    { animation: fadeIn 0.6s ease 0.2s both; }
-        .anim-footer { animation: fadeIn 0.6s ease 1.3s both; }
+        .anim-nav    { animation: fadeIn  0.5s ease 0.1s both; }
+        .anim-logo   { animation: fadeIn  0.8s ease 0.3s both; }
+        .anim-sub    { animation: fadeUp  0.6s ease 1.2s both; }
+        .anim-btns   { animation: fadeUp  0.6s ease 1.5s both; }
+        .anim-footer { animation: fadeIn  0.5s ease 1.8s both; }
       `}</style>
 
-      <div className="min-h-screen bg-[#0d0d0d] text-white flex flex-col overflow-hidden">
+      <div className="min-h-screen text-white flex flex-col overflow-hidden" style={{ backgroundColor: "#111111" }}>
 
         {/* Nav */}
-        <header className="anim-nav flex items-center justify-between px-8 py-5 border-b border-white/[0.05]">
-          <span className="text-xs font-medium tracking-widest text-white/25 uppercase">Troy VEX Robotics</span>
+        <header className="anim-nav flex items-center justify-between px-8 py-5 border-b border-white/[0.06]">
+          <span className="text-xs font-medium tracking-widest text-white uppercase">Troy VEX Robotics</span>
           <Link
             href="/login"
-            className="text-sm font-medium text-white/40 hover:text-white transition-colors duration-200"
+            className="text-sm font-medium text-white hover:text-white/70 transition-colors duration-200"
           >
             Sign in →
           </Link>
         </header>
 
         {/* Hero */}
-        <main className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="flex flex-col items-center text-center gap-8 max-w-xl">
+        <main className="flex-1 flex items-center justify-center px-6">
+          <div className="flex flex-col items-center text-center gap-10">
 
-            {/* Logo image — animated */}
-            <div className="anim-logo anim-glow relative w-72 h-48 select-none">
-              <div className="anim-strike w-full h-full">
-                <Image
-                  src="/hephaestus-logo.png"
-                  alt="Hephaestus"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
+            {/* Logo */}
+            <div className="anim-logo relative w-[480px] h-[320px] select-none">
+              <Image
+                src="/hephaestus-logo.png"
+                alt="Hephaestus"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
 
             {/* Subtitle */}
-            <div className="anim-sub space-y-3">
-              <p className="text-base text-white/40 leading-relaxed">
-                VEX robotics parts inventory, team allocation,<br className="hidden sm:block" />
-                and supply tracking — all in one place.
-              </p>
-            </div>
+            <p className="anim-sub text-sm text-white/45 leading-relaxed max-w-sm">
+              VEX robotics parts inventory, team allocation,
+              and supply tracking — all in one place.
+            </p>
 
             {/* CTAs */}
-            <div className="anim-btns flex items-center gap-3">
+            <div className="anim-btns flex items-center gap-4">
               <Link
                 href="/login"
-                className="inline-flex h-10 items-center rounded-lg bg-white px-6 text-sm font-semibold text-black hover:bg-white/90 active:scale-95 transition-all duration-150"
+                className="inline-flex h-11 items-center rounded-lg bg-white px-8 text-sm font-semibold text-black hover:bg-white/90 active:scale-95 transition-all duration-150"
               >
                 Sign in
               </Link>
               <a
                 href="mailto:ryanzhou1224@gmail.com?subject=Hephaestus%20Access%20Request"
-                className="inline-flex h-10 items-center rounded-lg border border-white/10 bg-white/[0.04] px-6 text-sm font-medium text-white/60 hover:bg-white/[0.09] hover:text-white active:scale-95 transition-all duration-150"
+                className="inline-flex h-11 items-center rounded-lg border border-white/15 bg-white/[0.05] px-8 text-sm font-medium text-white/70 hover:bg-white/[0.10] hover:text-white active:scale-95 transition-all duration-150"
               >
                 Request access
               </a>
@@ -105,9 +78,9 @@ export default async function LandingPage() {
         </main>
 
         {/* Footer */}
-        <footer className="anim-footer px-8 py-5 border-t border-white/[0.05] flex items-center justify-between">
-          <span className="text-xs text-white/15">© 2026 Troy VEX Robotics</span>
-          <span className="text-xs text-white/15">Hephaestus</span>
+        <footer className="anim-footer px-8 py-5 border-t border-white/[0.06] flex items-center justify-between">
+          <span className="text-xs text-white/20">© 2026 Troy VEX Robotics</span>
+          <span className="text-xs text-white/20">Hephaestus</span>
         </footer>
 
       </div>
