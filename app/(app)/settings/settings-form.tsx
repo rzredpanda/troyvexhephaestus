@@ -69,7 +69,7 @@ export function SettingsForm({ profile, teams, initialUsers }: {
   const [savingProfile, setSavingProfile] = useState(false);
   const [seedLoading, setSeedLoading] = useState(false);
   const [users, setUsers] = useState<UserProfile[]>(initialUsers ?? []);
-  const [userForm, setUserForm] = useState({ email: "", password: "", full_name: "", role: "member", team_id: "__none__" });
+  const [userForm, setUserForm] = useState({ email: "", full_name: "", role: "member", team_id: "__none__" });
   const [userLoading, setUserLoading] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
@@ -103,7 +103,7 @@ export function SettingsForm({ profile, teams, initialUsers }: {
     if (!res.ok) toast.error(data.error ?? "Failed");
     else {
       toast.success("User created");
-      setUserForm({ email: "", password: "", full_name: "", role: "member", team_id: "__none__" });
+      setUserForm({ email: "", full_name: "", role: "member", team_id: "__none__" });
       fetch("/api/users").then((r) => r.json()).then(setUsers);
     }
     setUserLoading(false);
@@ -216,14 +216,11 @@ export function SettingsForm({ profile, teams, initialUsers }: {
               <div className="rounded-md border bg-card" style={{ boxShadow: "var(--shadow-xs)" }}>
                 <div className="px-6 py-4 border-b">
                   <h2 className="text-sm font-semibold">Invite Team Member</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Create a new account for a team member.</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">They'll receive an email invitation and sign in with Google SSO.</p>
                 </div>
                 <form onSubmit={handleCreateUser} className="px-6 divide-y">
-                  <SettingRow title="Email">
+                  <SettingRow title="Email" description="Invitation email will be sent here.">
                     <Input type="email" value={userForm.email} onChange={(e) => setUserForm((f) => ({ ...f, email: e.target.value }))} required placeholder="member@team.com" />
-                  </SettingRow>
-                  <SettingRow title="Password">
-                    <Input type="password" value={userForm.password} onChange={(e) => setUserForm((f) => ({ ...f, password: e.target.value }))} required placeholder="••••••••" />
                   </SettingRow>
                   <SettingRow title="Full Name">
                     <Input value={userForm.full_name} onChange={(e) => setUserForm((f) => ({ ...f, full_name: e.target.value }))} placeholder="Jane Smith" />
