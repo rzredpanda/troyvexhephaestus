@@ -43,7 +43,7 @@ export default async function LandingPage() {
           <div className="flex flex-col items-center text-center gap-10">
 
             {/* Logo */}
-            <div className="anim-logo relative w-[480px] h-[320px] select-none">
+            <div className="anim-logo relative w-[680px] h-[440px] select-none">
               <Image
                 src="/hephaestus-logo.png"
                 alt="Hephaestus"
@@ -60,16 +60,16 @@ export default async function LandingPage() {
             </p>
 
             {/* CTAs */}
-            <div className="anim-btns flex items-center gap-4">
+            <div className="anim-btns flex items-center justify-center gap-3">
               <Link
                 href="/login"
-                className="inline-flex h-11 items-center rounded-lg bg-white px-8 text-sm font-semibold text-black hover:bg-white/90 active:scale-95 transition-all duration-150"
+                className="inline-flex h-11 w-44 items-center justify-center rounded-lg bg-white text-sm font-semibold text-black hover:bg-white/90 active:scale-95 transition-all duration-150"
               >
                 Sign in
               </Link>
               <a
                 href="mailto:ryanzhou1224@gmail.com?subject=Hephaestus%20Access%20Request"
-                className="inline-flex h-11 items-center rounded-lg border border-white/15 bg-white/[0.05] px-8 text-sm font-medium text-white/70 hover:bg-white/[0.10] hover:text-white active:scale-95 transition-all duration-150"
+                className="inline-flex h-11 w-44 items-center justify-center rounded-lg border border-white/15 bg-white/[0.05] text-sm font-medium text-white/70 hover:bg-white/[0.10] hover:text-white active:scale-95 transition-all duration-150"
               >
                 Request access
               </a>
