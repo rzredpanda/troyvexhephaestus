@@ -15,7 +15,7 @@ const sections: { label: string | null; items: NavItem[] }[] = [
   {
     label: null,
     items: [
-      { href: "/",            label: "Dashboard",   icon: LayoutDashboard,  roles: ["owner","admin","member"] },
+      { href: "/dashboard",   label: "Dashboard",   icon: LayoutDashboard,  roles: ["owner","admin","member"] },
       { href: "/inventory",   label: "Inventory",   icon: Package,           roles: ["owner","admin","member"] },
       { href: "/withdrawals", label: "Withdrawals", icon: ArrowDownFromLine, roles: ["owner","admin"] },
       { href: "/trades",      label: "Trades",      icon: ArrowLeftRight,    roles: ["owner","admin"] },
@@ -51,7 +51,7 @@ export function Sidebar({ role }: { role: Role }) {
   return (
     <aside className="flex h-full w-52 flex-col bg-[hsl(var(--sidebar-background))] border-r border-[hsl(var(--sidebar-border))]">
       {/* Logo — links to dashboard */}
-      <Link href="/" className="flex h-14 items-center gap-2.5 px-4 border-b border-[hsl(var(--sidebar-border))] hover:opacity-80 transition-opacity">
+      <Link href="/dashboard" className="flex h-14 items-center gap-2.5 px-4 border-b border-[hsl(var(--sidebar-border))] hover:opacity-80 transition-opacity">
         <div className="h-6 w-6 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
           <Package className="h-3.5 w-3.5 text-white/80" />
         </div>
@@ -74,7 +74,7 @@ export function Sidebar({ role }: { role: Role }) {
               )}
               <div className="space-y-0.5">
                 {visible.map(({ href, label, icon: Icon }) => {
-                  const active = pathname === href || (href !== "/" && pathname.startsWith(href));
+                  const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
                   return (
                     <Link
                       key={href}

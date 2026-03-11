@@ -1,6 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Public paths — no auth required
+const PUBLIC_PATHS = ["/", "/login", "/auth"];
+
+function isPublic(pathname: string) {
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+}
+
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -27,10 +34,13 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (!user && !pathname.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // Authenticated user on the landing page → send to dashboard
+  if (user && pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  if (user && pathname === "/login") {
+
+  // Unauthenticated user on a protected path → send to landing page
+  if (!user && !isPublic(pathname)) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -38,5 +48,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
