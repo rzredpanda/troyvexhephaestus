@@ -25,7 +25,7 @@ export default async function LandingPage() {
         .anim-footer { animation: fadeIn  0.5s ease 1.8s both; }
       `}</style>
 
-      <div className="min-h-screen text-white flex flex-col overflow-hidden" style={{ backgroundColor: "#111111" }}>
+      <div className="min-h-screen text-white flex flex-col overflow-hidden" style={{ backgroundColor: "#070c0d" }}>
 
         {/* Nav */}
         <header className="anim-nav flex items-center justify-between px-8 py-5 border-b border-white/[0.06]">
