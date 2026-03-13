@@ -1,28 +1,86 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/utils";
-import { Search, X } from "lucide-react";
-import type { CatalogItem } from "@/lib/types";
+import { Search, X, Heart } from "lucide-react";
+import type { CatalogItem, Team, Profile } from "@/lib/types";
+
+type WantedEntry = {
+  id: string;
+  catalog_item_id: string;
+  team_id: string;
+  quantity_needed: number;
+  priority: string;
+};
+
+type HeartPop = {
+  itemId: string;
+  top: number;
+  right: number;
+};
 
 interface Props {
   initialItems: CatalogItem[];
   categories: string[];
+  teams: Team[];
+  profile: Profile | null;
+  initialWanted: WantedEntry[];
 }
 
-export function CatalogSearch({ initialItems, categories }: Props) {
+const PRIORITIES = ["Low", "Medium", "High"] as const;
+
+export function CatalogSearch({ initialItems, categories, teams, profile, initialWanted }: Props) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [results, setResults] = useState<CatalogItem[]>(initialItems);
   const [searching, setSearching] = useState(false);
 
+  // wanted state
+  const [wantedMap, setWantedMap] = useState<Map<string, WantedEntry[]>>(() => {
+    const m = new Map<string, WantedEntry[]>();
+    for (const w of initialWanted) {
+      const arr = m.get(w.catalog_item_id) ?? [];
+      arr.push(w);
+      m.set(w.catalog_item_id, arr);
+    }
+    return m;
+  });
+
+  // heart popover
+  const [heartPop, setHeartPop] = useState<HeartPop | null>(null);
+  const [popTeamId, setPopTeamId] = useState("");
+  const [popQty, setPopQty] = useState(1);
+  const [popPriority, setPopPriority] = useState("Medium");
+  const [popLoading, setPopLoading] = useState(false);
+  const popRef = useRef<HTMLDivElement>(null);
+
+  // default team when popover opens
+  useEffect(() => {
+    if (heartPop) {
+      setPopTeamId(profile?.team_id ?? teams[0]?.id ?? "");
+      setPopQty(1);
+      setPopPriority("Medium");
+    }
+  }, [heartPop?.itemId]);
+
+  // close popover on outside click
+  useEffect(() => {
+    if (!heartPop) return;
+    function onDown(e: MouseEvent) {
+      if (popRef.current && !popRef.current.contains(e.target as Node)) {
+        setHeartPop(null);
+      }
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [heartPop]);
+
   const doSearch = useCallback(async (q: string, cat: string | null) => {
-    // Filter locally first for instant response
     let local = initialItems;
     if (cat) local = local.filter((i) => i.category === cat);
     if (q.length < 2) { setResults(local); return; }
-
     setSearching(true);
     try {
       const params = new URLSearchParams({ q, limit: "100" });
@@ -42,13 +100,72 @@ export function CatalogSearch({ initialItems, categories }: Props) {
     return () => clearTimeout(t);
   }, [query, activeCategory, doSearch]);
 
-  // Category-only filtering (instant, no network)
   function handleCategory(cat: string) {
     const next = activeCategory === cat ? null : cat;
     setActiveCategory(next);
     if (query.length < 2) {
       setResults(next ? initialItems.filter((i) => i.category === next) : initialItems);
     }
+  }
+
+  function isHearted(itemId: string) {
+    return (wantedMap.get(itemId)?.length ?? 0) > 0;
+  }
+
+  function openHeartPop(e: React.MouseEvent<HTMLButtonElement>, itemId: string) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHeartPop({ itemId, top: rect.bottom + 8, right: window.innerWidth - rect.right });
+  }
+
+  async function handleHeartClick(e: React.MouseEvent<HTMLButtonElement>, item: CatalogItem) {
+    if (isHearted(item.id)) {
+      // Remove — delete the first matching entry (prefer user's team)
+      const entries = wantedMap.get(item.id) ?? [];
+      const target = entries.find((w) => w.team_id === profile?.team_id) ?? entries[0];
+      if (!target) return;
+      const res = await fetch("/api/wanted", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: target.id }),
+      });
+      if (res.ok) {
+        setWantedMap((prev) => {
+          const next = new Map(prev);
+          const remaining = (next.get(item.id) ?? []).filter((w) => w.id !== target.id);
+          if (remaining.length === 0) next.delete(item.id);
+          else next.set(item.id, remaining);
+          return next;
+        });
+      }
+    } else {
+      openHeartPop(e, item.id);
+    }
+  }
+
+  async function handlePopAdd() {
+    if (!heartPop || !popTeamId) return;
+    setPopLoading(true);
+    const res = await fetch("/api/wanted", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        catalog_item_id: heartPop.itemId,
+        team_id: popTeamId,
+        quantity_needed: popQty,
+        priority: popPriority.toLowerCase(),
+      }),
+    });
+    if (res.ok) {
+      const data: WantedEntry = await res.json();
+      setWantedMap((prev) => {
+        const next = new Map(prev);
+        const arr = next.get(heartPop.itemId) ?? [];
+        next.set(heartPop.itemId, [...arr, data]);
+        return next;
+      });
+      setHeartPop(null);
+    }
+    setPopLoading(false);
   }
 
   const shown = results;
@@ -94,7 +211,6 @@ export function CatalogSearch({ initialItems, categories }: Props) {
         </div>
       )}
 
-      {/* Results */}
       <div className="text-xs text-muted-foreground pb-1">
         {searching ? "Searching…" : `${shown.length} item${shown.length !== 1 ? "s" : ""}`}
       </div>
@@ -108,31 +224,105 @@ export function CatalogSearch({ initialItems, categories }: Props) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/30">
-                {["Name","SKU","Part ID","Category","Unit Price"].map((h, i) => (
-                  <th key={h} className={`px-4 py-2.5 text-xs font-medium text-muted-foreground uppercase tracking-wide ${i === 4 ? "text-right" : "text-left"}`}>{h}</th>
+                {["Name", "SKU", "Part ID", "Category", "Unit Price", ""].map((h, i) => (
+                  <th
+                    key={i}
+                    className={`px-4 py-2.5 text-xs font-medium text-muted-foreground uppercase tracking-wide ${
+                      i === 4 ? "text-right" : i === 5 ? "w-10" : "text-left"
+                    }`}
+                  >
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y">
-              {shown.map((item) => (
-                <tr key={item.id} className="hover:bg-muted/20 transition-colors">
-                  <td className="px-4 py-2.5 font-medium">{item.name}</td>
-                  <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{item.sku}</td>
-                  <td className="px-4 py-2.5 text-muted-foreground text-xs">{item.part_id ?? "—"}</td>
-                  <td className="px-4 py-2.5">
-                    {item.category && (
-                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
-                        {item.category}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-2.5 text-right tabular-nums">{formatCurrency(item.unit_price)}</td>
-                </tr>
-              ))}
+              {shown.map((item) => {
+                const hearted = isHearted(item.id);
+                return (
+                  <tr key={item.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="px-4 py-2.5 font-medium">{item.name}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{item.sku}</td>
+                    <td className="px-4 py-2.5 text-muted-foreground text-xs">{item.part_id ?? "—"}</td>
+                    <td className="px-4 py-2.5">
+                      {item.category && (
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
+                          {item.category}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">{formatCurrency(item.unit_price)}</td>
+                    <td className="px-4 py-2.5 text-center">
+                      <button
+                        onClick={(e) => handleHeartClick(e, item)}
+                        className={`transition-colors ${
+                          hearted
+                            ? "text-rose-500 hover:text-rose-400"
+                            : "text-muted-foreground hover:text-rose-400"
+                        }`}
+                        title={hearted ? "Remove from wanted" : "Add to wanted"}
+                      >
+                        <Heart className={`h-4 w-4 ${hearted ? "fill-rose-500" : ""}`} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
       </div>
+
+      {/* Heart popover */}
+      {heartPop && (
+        <div
+          ref={popRef}
+          style={{ position: "fixed", top: heartPop.top, right: heartPop.right, zIndex: 100 }}
+          className="bg-popover border rounded-lg shadow-lg p-4 w-56 space-y-3"
+        >
+          <p className="text-xs font-semibold text-foreground">Add to Wanted List</p>
+          <div className="space-y-2">
+            <label className="text-xs text-muted-foreground">Team</label>
+            <Select value={popTeamId} onValueChange={setPopTeamId}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select team" /></SelectTrigger>
+              <SelectContent>
+                {teams.filter((t) => !t.archived).map((t) => (
+                  <SelectItem key={t.id} value={t.id} className="text-xs">{t.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-muted-foreground">Qty needed</label>
+            <Input
+              type="number"
+              min={1}
+              value={popQty}
+              onChange={(e) => setPopQty(parseInt(e.target.value, 10) || 1)}
+              className="h-8 text-xs"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-muted-foreground">Priority</label>
+            <Select value={popPriority} onValueChange={setPopPriority}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {PRIORITIES.map((p) => (
+                  <SelectItem key={p} value={p} className="text-xs">{p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <Button size="sm" className="flex-1 h-7 text-xs" onClick={handlePopAdd} disabled={popLoading || !popTeamId}>
+              {popLoading ? "Adding…" : "Add"}
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setHeartPop(null)}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
