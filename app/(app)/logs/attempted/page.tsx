@@ -6,12 +6,18 @@ import type { InventoryLog } from "@/lib/types";
 export default function AttemptedLogsPage() {
   const [logs, setLogs] = useState<InventoryLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [canApprove, setCanApprove] = useState(false);
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
-    const res = await fetch("/api/logs/attempted");
-    const data = await res.json();
+    const [logsRes, profileRes] = await Promise.all([
+      fetch("/api/logs/attempted"),
+      fetch("/api/settings"),
+    ]);
+    const data = await logsRes.json();
+    const profile = await profileRes.json();
     setLogs(Array.isArray(data) ? data : []);
+    setCanApprove(["admin", "owner"].includes(profile?.role ?? ""));
     setLoading(false);
   }, []);
 
@@ -23,7 +29,7 @@ export default function AttemptedLogsPage() {
       {loading ? (
         <p className="text-muted-foreground">Loading…</p>
       ) : (
-        <LogTable logs={logs} showActions onStatusChange={fetchLogs} />
+        <LogTable logs={logs} showActions={canApprove} onStatusChange={fetchLogs} />
       )}
     </div>
   );

@@ -19,6 +19,18 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
+
+  // Prevent duplicate entries for the same team + catalog item
+  const { data: existing } = await supabase
+    .from("wanted_items")
+    .select("id")
+    .eq("catalog_item_id", body.catalog_item_id)
+    .eq("team_id", body.team_id)
+    .maybeSingle();
+  if (existing) {
+    return NextResponse.json({ error: "Already in wanted list for this team" }, { status: 409 });
+  }
+
   const { data, error } = await supabase
     .from("wanted_items")
     .insert(body)

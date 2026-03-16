@@ -13,6 +13,7 @@ export function ReturnForm({ teams }: { teams: Team[] }) {
   const router = useRouter();
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
   const [search, setSearch] = useState("");
+  const [selectedPart, setSelectedPart] = useState<CatalogItem | null>(null);
   const [teamId, setTeamId] = useState("");
   const [catalogItemId, setCatalogItemId] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -22,8 +23,11 @@ export function ReturnForm({ teams }: { teams: Team[] }) {
 
   useEffect(() => {
     if (search.length < 2) { setCatalogItems([]); return; }
-    fetch(`/api/catalog/search?q=${encodeURIComponent(search)}`)
-      .then((r) => r.json()).then(setCatalogItems).catch(() => {});
+    const t = setTimeout(() => {
+      fetch(`/api/catalog/search?q=${encodeURIComponent(search)}`)
+        .then((r) => r.json()).then(setCatalogItems).catch(() => {});
+    }, 180);
+    return () => clearTimeout(t);
   }, [search]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -61,9 +65,12 @@ export function ReturnForm({ teams }: { teams: Team[] }) {
             </div>
             <div className="space-y-2">
               <Label>Search Part</Label>
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or SKU…" />
+              <Input value={search} onChange={(e) => { setSearch(e.target.value); setSelectedPart(null); setCatalogItemId(""); }} placeholder="Search by name or SKU…" />
               {catalogItems.length > 0 && (
-                <Select value={catalogItemId} onValueChange={setCatalogItemId}>
+                <Select value={catalogItemId} onValueChange={(id) => {
+                  setCatalogItemId(id);
+                  setSelectedPart(catalogItems.find((c) => c.id === id) ?? null);
+                }}>
                   <SelectTrigger><SelectValue placeholder="Select part" /></SelectTrigger>
                   <SelectContent>
                     {catalogItems.map((c) => (
@@ -71,6 +78,14 @@ export function ReturnForm({ teams }: { teams: Team[] }) {
                     ))}
                   </SelectContent>
                 </Select>
+              )}
+              {selectedPart && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  SKU: <span className="font-mono">{selectedPart.sku}</span>
+                  {selectedPart.unit_price > 0 && (
+                    <> &middot; ${(selectedPart.unit_price / 100).toFixed(2)}</>
+                  )}
+                </p>
               )}
             </div>
             <div className="space-y-2">

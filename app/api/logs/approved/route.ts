@@ -24,6 +24,11 @@ export async function PATCH(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  if (!["admin", "owner"].includes(profile?.role ?? "")) {
+    return NextResponse.json({ error: "Admin or owner required" }, { status: 403 });
+  }
+
   const { id, status } = await req.json();
   if (!["approved", "rejected"].includes(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });

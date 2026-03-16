@@ -119,10 +119,16 @@ export function CatalogSearch({ initialItems, categories, teams, profile, initia
 
   async function handleHeartClick(e: React.MouseEvent<HTMLButtonElement>, item: CatalogItem) {
     if (isHearted(item.id)) {
-      // Remove — delete the first matching entry (prefer user's team)
+      // Remove — only delete an entry that belongs to the user's own team
       const entries = wantedMap.get(item.id) ?? [];
-      const target = entries.find((w) => w.team_id === profile?.team_id) ?? entries[0];
-      if (!target) return;
+      const target = profile?.team_id
+        ? entries.find((w) => w.team_id === profile.team_id)
+        : null;
+      if (!target) {
+        // No team assigned or no matching entry — can't remove safely; open popover instead
+        openHeartPop(e, item.id);
+        return;
+      }
       const res = await fetch("/api/wanted", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -164,6 +170,11 @@ export function CatalogSearch({ initialItems, categories, teams, profile, initia
         return next;
       });
       setHeartPop(null);
+    } else {
+      const err = await res.json().catch(() => ({}));
+      // 409 means already wanted — just close the popover and treat as success
+      if (res.status === 409) setHeartPop(null);
+      else console.error("Failed to add wanted item:", err.error);
     }
     setPopLoading(false);
   }

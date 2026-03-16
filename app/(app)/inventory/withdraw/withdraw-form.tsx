@@ -33,10 +33,13 @@ export function WithdrawForm({ teams }: { teams: Team[] }) {
   useEffect(() => {
     if (selectedPart) return;
     if (search.length < 2) { setResults([]); setOpen(false); return; }
-    fetch(`/api/catalog/search?q=${encodeURIComponent(search)}`)
-      .then((r) => r.json())
-      .then((data) => { setResults(data); setOpen(data.length > 0); })
-      .catch(() => {});
+    const t = setTimeout(() => {
+      fetch(`/api/catalog/search?q=${encodeURIComponent(search)}`)
+        .then((r) => r.json())
+        .then((data) => { setResults(data); setOpen(data.length > 0); })
+        .catch(() => {});
+    }, 180);
+    return () => clearTimeout(t);
   }, [search, selectedPart]);
 
   // Close dropdown on outside click

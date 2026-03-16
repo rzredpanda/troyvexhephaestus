@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,6 +64,7 @@ function SettingRow({ title, description, children }: { title: string; descripti
 export function SettingsForm({ profile, teams, initialUsers }: {
   profile: Profile; teams: Team[]; initialUsers?: UserProfile[];
 }) {
+  const { theme, setTheme } = useTheme();
   const [section, setSection] = useState<Section>("account");
   const [fullName, setFullName] = useState(profile.full_name ?? "");
   const [teamId, setTeamId] = useState(profile.team_id ?? "__none__");
@@ -184,8 +186,8 @@ export function SettingsForm({ profile, teams, initialUsers }: {
                     {["light","dark","system"].map((t) => (
                       <button
                         key={t}
-                        onClick={() => { document.documentElement.classList.toggle("dark", t === "dark" || (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)); }}
-                        className="flex-1 py-2 px-3 rounded border text-xs font-medium capitalize transition-colors hover:bg-muted"
+                        onClick={() => setTheme(t)}
+                        className={`flex-1 py-2 px-3 rounded border text-xs font-medium capitalize transition-colors hover:bg-muted ${theme === t ? "bg-muted border-foreground/40 font-semibold" : ""}`}
                       >
                         {t}
                       </button>
@@ -216,7 +218,7 @@ export function SettingsForm({ profile, teams, initialUsers }: {
               <div className="rounded-md border bg-card" style={{ boxShadow: "var(--shadow-xs)" }}>
                 <div className="px-6 py-4 border-b">
                   <h2 className="text-sm font-semibold">Invite Team Member</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">They'll receive an email invitation and sign in with Google SSO.</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">They'll receive an email invitation and can set their password via the link.</p>
                 </div>
                 <form onSubmit={handleCreateUser} className="px-6 divide-y">
                   <SettingRow title="Email" description="Invitation email will be sent here.">

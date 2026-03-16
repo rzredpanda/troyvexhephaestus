@@ -31,6 +31,7 @@ export function ChecklistClient({ initialItems }: { initialItems: ChecklistItem[
       const item = await res.json();
       setItems((prev) => [...prev, item]);
       setLabel("");
+      setEventName("");
     } else toast.error("Failed to add");
   }
 
